@@ -1,0 +1,13 @@
+Project
+===================
+Rmt2OrmGen
+
+
+Main Class
+=================
+com.commandline.CommandlineBean
+
+
+VM Args
+================
+-DOrmGenProfile=com.resources.profile_contacts
