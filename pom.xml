@@ -7,7 +7,7 @@
 	<name>ORM Generator</name>
 	<description>Project that generates java and xml files for ORM framework from a given database.</description>
 	<properties>
-		<JConnectLibPath>C:/source/API_Business_Server/lib</JConnectLibPath>
+		<JConnectLibPath>lib</JConnectLibPath>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -26,7 +26,7 @@
 			<artifactId>sybase-jconnect</artifactId>
 			<version>3.0</version>
 			<scope>system</scope>
-			<systemPath>${JConnectLibPath}/jconn3.jar</systemPath>
+			<systemPath>${basedir}/${JConnectLibPath}/jconn3.jar</systemPath>
 		</dependency>
 	</dependencies>
 	<build>
