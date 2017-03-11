@@ -4,7 +4,7 @@
 	<groupId>com.rmt2.orm.generator</groupId>
 	<artifactId>rmt2-orm-generator</artifactId>
 	<version>2.0-SNAPSHOT</version>
-	<name>ORM Generator</name>
+	<name>orm-generator</name>
 	<description>Project that generates java and xml files for ORM framework from a given database.</description>
 	<properties>
 		<JConnectLibPath>lib</JConnectLibPath>
@@ -63,17 +63,27 @@
 				</executions>
 			</plugin>
 		</plugins>
+		<extensions>
+      <!-- Enabling the use of FTP -->
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+         <artifactId>wagon-ftp</artifactId>
+         <version>2.12</version>
+      </extension>
+    </extensions>
 	</build>
 	<distributionManagement>
 		<snapshotRepository>
-			<id>InternalSnapshots</id>
+			<id>ftp-snapshot-repository</id>
 			<name>Internal Snapshots</name>
-			<url>file://rmtdaldev77/download/repo/snapshots</url>
+			<!-- IP Address for RMTDALSYS01 -->
+			<url>ftp://192.168.0.4/repo/snapshots</url>
 		</snapshotRepository>
 		<repository>
-			<id>InternalReleases</id>
+			<id>ftp-release-repository</id>
 			<name>Internal Releases</name>
-			<url>file://rmtdalsys01/rmt2/repo/releases/</url>
+			<!-- IP Address for RMTDALSYS01 -->
+			<url>ftp://192.168.0.4/repo/releases</url>
 		</repository>
 	</distributionManagement>
 </project>
