@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.rmt2.orm.generator</groupId>
-	<artifactId>rmt2-orm-generator</artifactId>
+	<groupId>org.rmt2.orm</groupId>
+	<artifactId>orm-code-generator</artifactId>
 	<version>2.0</version>
 	<name>orm-generator</name>
 	<description>Project that generates java and xml files for ORM framework from a given database.</description>
@@ -11,7 +11,7 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>com.rmt2.framework.suite</groupId>
+			<groupId>org.rmt2.framework</groupId>
 			<artifactId>fw-core</artifactId>
 			<version>1.1-SNAPSHOT</version>
 		</dependency>
