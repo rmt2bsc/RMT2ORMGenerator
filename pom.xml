@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.rmt2.orm.generator</groupId>
 	<artifactId>rmt2-orm-generator</artifactId>
-	<version>2.0-SNAPSHOT</version>
+	<version>2.0</version>
 	<name>orm-generator</name>
 	<description>Project that generates java and xml files for ORM framework from a given database.</description>
 	<properties>
