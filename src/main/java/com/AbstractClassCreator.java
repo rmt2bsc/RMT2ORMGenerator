@@ -1,10 +1,9 @@
 package com;
 
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Properties;
-
-import java.io.PrintWriter;
-import java.io.FileWriter;
 
 /**
  * Proivides the necessary logic to generate an ORM java bean class file
@@ -20,7 +19,7 @@ public abstract class AbstractClassCreator extends AbstractOrmResource {
 
     private int tableId;
 
-    private String formBeanName;
+    private String ormBeanClassName;
 
     private StringBuffer header;
 
@@ -31,6 +30,18 @@ public abstract class AbstractClassCreator extends AbstractOrmResource {
     private StringBuffer constructor;
 
     private StringBuffer staticColNames;
+    
+    private StringBuilder equalsMethodEntries;
+    
+    private StringBuilder hashCodeMethodEntries;
+    
+    private StringBuilder toStringMethodEntries;
+    
+    private StringBuilder equalsMethod;
+    
+    private StringBuilder hashCodeMethod;
+    
+    private StringBuilder toStringMethod;
 
     /**
      * Creates an AbstractClassCreator instance which is aware of its
@@ -61,7 +72,7 @@ public abstract class AbstractClassCreator extends AbstractOrmResource {
             for (Object data : list) {
                 tableName = ((OrmObjectData) data).getObjectName().trim()
                         .toLowerCase();
-                formBeanName = DataHelper.formatClassMethodName(tableName);
+                ormBeanClassName = DataHelper.formatClassMethodName(tableName);
                 tableId = ((OrmObjectData) data).getObjectId();
 
                 // Instantiate buffers
@@ -70,6 +81,9 @@ public abstract class AbstractClassCreator extends AbstractOrmResource {
                 this.methods = new StringBuffer();
                 this.constructor = new StringBuffer();
                 this.staticColNames = new StringBuffer();
+                this.equalsMethodEntries = new StringBuilder();
+                this.hashCodeMethodEntries = new StringBuilder();
+                this.toStringMethodEntries = new StringBuilder();
 
                 // Create class package statement
                 String packageLoc = this.prop.getProperty("orm_bean_package");
@@ -89,7 +103,7 @@ public abstract class AbstractClassCreator extends AbstractOrmResource {
                 this.header.append(" */\n");
 
                 this.header.append("public class ");
-                this.header.append(formBeanName);
+                this.header.append(ormBeanClassName);
                 this.header.append(" extends OrmBean {\n\n");
 
                 // Add javadoc for default constructor.
@@ -100,13 +114,17 @@ public abstract class AbstractClassCreator extends AbstractOrmResource {
                 // this.constructor.append(" * @author auto generated.\n");
                 this.constructor.append(" */\n");
                 this.constructor.append("  public ");
-                this.constructor.append(formBeanName);
+                this.constructor.append(ormBeanClassName);
                 this.constructor
                         .append("() throws SystemException {\n\tsuper();\n }\n");
 
                 // Create Class data memeber declarations
                 this.identifyProperties(tableId);
 
+                // Complete building equals, hashCode, and toString Java Object methods
+                String coreMehtodImpl = this.finalizeCoreJavaObjectMethods();
+                this.methods.append(coreMehtodImpl);
+                
                 // Build last method
                 this.methods.append("/**\n");
                 this.methods
@@ -121,20 +139,20 @@ public abstract class AbstractClassCreator extends AbstractOrmResource {
                 // Assemble the javabean parts into a file.
                 content = this.header.toString()
                         + "\n\n\n\t// Property name constants that belong to respective DataSource, "
-                        + formBeanName + "View\n\n"
+                        + ormBeanClassName + "View\n\n"
                         + this.staticColNames.toString() + "\n\n\n\t"
                         + this.declaration.toString()
                         + "\n\n\n\t// Getter/Setter Methods\n\n"
                         + this.constructor.toString() + this.methods.toString();
                 // this.methods.toString() +
                 // "  public void initBean() throws SystemException {}\n}";
-                FileWriter file = new FileWriter(outputPath + formBeanName
+                FileWriter file = new FileWriter(outputPath + ormBeanClassName
                         + ".java");
                 PrintWriter pw = (new PrintWriter(file));
                 pw.print(content);
                 pw.flush();
                 pw.close();
-                System.out.println(formBeanName
+                System.out.println(ormBeanClassName
                         + "Bean - created successfully!");
             }
             System.out.println("Bean Creation Process Completed!!!!!!!");
@@ -242,6 +260,89 @@ public abstract class AbstractClassCreator extends AbstractOrmResource {
         this.methods.append(";\n");
         this.methods.append("  }\n");
 
+        this.addCoreJavaObjectMethodEntries(varName);
         return 1;
     }
+    
+    private void addCoreJavaObjectMethodEntries(String varName) {
+        // Setup entry for equals() method.
+        this.equalsMethodEntries.append("if (EqualityAssistant.notEqual(this.");
+        this.equalsMethodEntries.append(varName);
+        this.equalsMethodEntries.append(", other.");
+        this.equalsMethodEntries.append(varName);
+        this.equalsMethodEntries.append(")) {\n");
+        this.equalsMethodEntries.append("  return false;");
+        this.equalsMethodEntries.append("}\n");
+        
+        // Setup entry for hashCode() method.
+        if (this.hashCodeMethodEntries.length() > 20) {
+            this.hashCodeMethodEntries.append(",\n");
+        }
+        this.hashCodeMethodEntries.append("    HashCodeAssistant.hashObject(this.");
+        this.hashCodeMethodEntries.append(varName);
+        this.hashCodeMethodEntries.append(")");
+       
+        // Setup entry for toString() method
+        if (this.toStringMethodEntries.length() > 5) {
+            this.toStringMethodEntries.append(" + \n");
+            this.toStringMethodEntries.append("\", ");
+        }
+        this.toStringMethodEntries.append(varName);
+        this.toStringMethodEntries.append("=\" + ");
+        this.toStringMethodEntries.append(varName);
+        return;
+    }
+    
+    private String finalizeCoreJavaObjectMethods() {
+        // Build equals() method
+        this.equalsMethod = new StringBuilder();
+        this.equalsMethod.append("\n");
+        this.equalsMethod.append("@Override\n");
+        this.equalsMethod.append("public boolean equals(Object obj) {\n");
+        this.equalsMethod.append("   if (this == obj) {\n");
+        this.equalsMethod.append("      return true;\n");
+        this.equalsMethod.append("   }\n");
+        this.equalsMethod.append("   if (obj == null) {\n");
+        this.equalsMethod.append("      return false;\n");
+        this.equalsMethod.append("   }\n");
+        this.equalsMethod.append("   if (getClass() != obj.getClass()) {\n");
+        this.equalsMethod.append("      return false;\n");
+        this.equalsMethod.append("   }\n");
+        
+        this.equalsMethod.append("   final ");
+        this.equalsMethod.append(this.ormBeanClassName);
+        this.equalsMethod.append(" other = (");
+        this.equalsMethod.append(this.ormBeanClassName);
+        this.equalsMethod.append(") obj; \n");
+        // Add entries
+        this.equalsMethod.append(this.equalsMethodEntries);
+        // Close method
+        this.equalsMethod.append("   return true; \n");
+        this.equalsMethod.append("} \n");
+        
+        // Build hashCode() method
+        this.hashCodeMethod = new StringBuilder();
+        this.hashCodeMethod.append("\n");
+        this.hashCodeMethod.append("@Override\n");
+        this.hashCodeMethod.append("public int hashCode() {\n");
+        this.hashCodeMethod.append("   return HashCodeAssistant.combineHashCodes(");
+        this.hashCodeMethod.append(this.hashCodeMethodEntries);
+        this.hashCodeMethod.append("\n            );");
+        this.hashCodeMethod.append("} \n");
+
+        // Build toString() method
+        this.toStringMethod = new StringBuilder();
+        this.toStringMethod.append("\n");
+        this.toStringMethod.append("@Override\n");
+        this.toStringMethod.append("public String toString() {\n");
+        this.toStringMethod.append("   return \"");
+        this.toStringMethod.append(this.ormBeanClassName);
+        this.toStringMethod.append(" [");
+        this.toStringMethod.append(this.toStringMethodEntries);
+        this.toStringMethod.append("  + \"]\";");
+        
+        // Return all three method implementations
+        return this.equalsMethod.toString() + this.hashCodeMethod.toString() + this.toStringMethod.toString();
+    }
+    
 }
