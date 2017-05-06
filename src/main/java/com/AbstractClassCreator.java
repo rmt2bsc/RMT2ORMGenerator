@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Properties;
 
+import com.util.RMT2String;
+
 /**
  * Proivides the necessary logic to generate an ORM java bean class file
  * containing the properties and accessor methods that corresponds to the source
@@ -90,6 +92,8 @@ public abstract class AbstractClassCreator extends AbstractOrmResource {
                 this.header.append("package " + packageLoc + ";\n\n\n");
                 this.header.append("import java.util.Date;\n");
                 this.header.append("import java.io.*;\n");
+                this.header.append("import com.util.assistants.EqualityAssistant;\n");
+                this.header.append("import com.util.assistants.HashCodeAssistant;\n");
                 this.header
                         .append("import com.api.persistence.db.orm.OrmBean;\n");
                 this.header.append("import com.SystemException;\n\n\n");
@@ -266,25 +270,30 @@ public abstract class AbstractClassCreator extends AbstractOrmResource {
     
     private void addCoreJavaObjectMethodEntries(String varName) {
         // Setup entry for equals() method.
+        this.equalsMethodEntries.append(RMT2String.spaces(3));
         this.equalsMethodEntries.append("if (EqualityAssistant.notEqual(this.");
         this.equalsMethodEntries.append(varName);
         this.equalsMethodEntries.append(", other.");
         this.equalsMethodEntries.append(varName);
         this.equalsMethodEntries.append(")) {\n");
-        this.equalsMethodEntries.append("  return false;");
+        this.equalsMethodEntries.append(RMT2String.spaces(6));
+        this.equalsMethodEntries.append("return false;\n");
+        this.equalsMethodEntries.append(RMT2String.spaces(3));
         this.equalsMethodEntries.append("}\n");
         
         // Setup entry for hashCode() method.
         if (this.hashCodeMethodEntries.length() > 20) {
             this.hashCodeMethodEntries.append(",\n");
+            this.hashCodeMethodEntries.append(RMT2String.spaces(15));
         }
-        this.hashCodeMethodEntries.append("    HashCodeAssistant.hashObject(this.");
+        this.hashCodeMethodEntries.append("HashCodeAssistant.hashObject(this.");
         this.hashCodeMethodEntries.append(varName);
         this.hashCodeMethodEntries.append(")");
        
         // Setup entry for toString() method
         if (this.toStringMethodEntries.length() > 5) {
             this.toStringMethodEntries.append(" + \n");
+            this.toStringMethodEntries.append(RMT2String.spaces(10));
             this.toStringMethodEntries.append("\", ");
         }
         this.toStringMethodEntries.append(varName);
@@ -299,17 +308,27 @@ public abstract class AbstractClassCreator extends AbstractOrmResource {
         this.equalsMethod.append("\n");
         this.equalsMethod.append("@Override\n");
         this.equalsMethod.append("public boolean equals(Object obj) {\n");
-        this.equalsMethod.append("   if (this == obj) {\n");
-        this.equalsMethod.append("      return true;\n");
-        this.equalsMethod.append("   }\n");
-        this.equalsMethod.append("   if (obj == null) {\n");
-        this.equalsMethod.append("      return false;\n");
-        this.equalsMethod.append("   }\n");
-        this.equalsMethod.append("   if (getClass() != obj.getClass()) {\n");
-        this.equalsMethod.append("      return false;\n");
-        this.equalsMethod.append("   }\n");
+        this.equalsMethod.append(RMT2String.spaces(3));
+        this.equalsMethod.append("if (this == obj) {\n");
+        this.equalsMethod.append(RMT2String.spaces(6));
+        this.equalsMethod.append("return true;\n");
+        this.equalsMethod.append(RMT2String.spaces(3));
+        this.equalsMethod.append("}\n");
+        this.equalsMethod.append(RMT2String.spaces(3));
+        this.equalsMethod.append("if (obj == null) {\n");
+        this.equalsMethod.append(RMT2String.spaces(6));
+        this.equalsMethod.append("return false;\n");
+        this.equalsMethod.append(RMT2String.spaces(3));
+        this.equalsMethod.append("}\n");
+        this.equalsMethod.append(RMT2String.spaces(3));
+        this.equalsMethod.append("if (getClass() != obj.getClass()) {\n");
+        this.equalsMethod.append(RMT2String.spaces(6));
+        this.equalsMethod.append("return false;\n");
+        this.equalsMethod.append(RMT2String.spaces(3));
+        this.equalsMethod.append("}\n");
         
-        this.equalsMethod.append("   final ");
+        this.equalsMethod.append(RMT2String.spaces(3));
+        this.equalsMethod.append("final ");
         this.equalsMethod.append(this.ormBeanClassName);
         this.equalsMethod.append(" other = (");
         this.equalsMethod.append(this.ormBeanClassName);
@@ -317,7 +336,8 @@ public abstract class AbstractClassCreator extends AbstractOrmResource {
         // Add entries
         this.equalsMethod.append(this.equalsMethodEntries);
         // Close method
-        this.equalsMethod.append("   return true; \n");
+        this.equalsMethod.append(RMT2String.spaces(3));
+        this.equalsMethod.append("return true; \n");
         this.equalsMethod.append("} \n");
         
         // Build hashCode() method
@@ -325,9 +345,10 @@ public abstract class AbstractClassCreator extends AbstractOrmResource {
         this.hashCodeMethod.append("\n");
         this.hashCodeMethod.append("@Override\n");
         this.hashCodeMethod.append("public int hashCode() {\n");
-        this.hashCodeMethod.append("   return HashCodeAssistant.combineHashCodes(");
+        this.hashCodeMethod.append(RMT2String.spaces(3));
+        this.hashCodeMethod.append("return HashCodeAssistant.combineHashCodes(");
         this.hashCodeMethod.append(this.hashCodeMethodEntries);
-        this.hashCodeMethod.append("\n            );");
+        this.hashCodeMethod.append(");\n");
         this.hashCodeMethod.append("} \n");
 
         // Build toString() method
@@ -335,11 +356,13 @@ public abstract class AbstractClassCreator extends AbstractOrmResource {
         this.toStringMethod.append("\n");
         this.toStringMethod.append("@Override\n");
         this.toStringMethod.append("public String toString() {\n");
-        this.toStringMethod.append("   return \"");
+        this.toStringMethod.append(RMT2String.spaces(3));
+        this.toStringMethod.append("return \"");
         this.toStringMethod.append(this.ormBeanClassName);
         this.toStringMethod.append(" [");
         this.toStringMethod.append(this.toStringMethodEntries);
-        this.toStringMethod.append("  + \"]\";");
+        this.toStringMethod.append("  + \"]\";\n");
+        this.toStringMethod.append("}\n\n");
         
         // Return all three method implementations
         return this.equalsMethod.toString() + this.hashCodeMethod.toString() + this.toStringMethod.toString();
