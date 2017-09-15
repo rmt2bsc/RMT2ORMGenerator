@@ -264,7 +264,12 @@ public abstract class AbstractClassCreator extends AbstractOrmResource {
         this.methods.append(";\n");
         this.methods.append("  }\n");
 
-        this.addCoreJavaObjectMethodEntries(varName);
+        // CA-53: Exclude any tracking columns
+        boolean okToAddProperty = (!varName.equals("dateCreated") && !varName.equals("dateUpdated")
+                && !varName.equals("userId") && !varName.equals("ipCreated") && !varName.equals("ipUpdated"));
+        if (okToAddProperty) {
+            this.addCoreJavaObjectMethodEntries(varName);
+        }
         return 1;
     }
     
