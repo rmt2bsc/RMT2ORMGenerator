@@ -193,7 +193,7 @@ class AsaProviderImpl extends AbstractDbmsProvider implements DbmsProvider {
 
             case 9:
             case 10:
-            case 11:
+                // case 11:
                 // case 12:
             case 28:
             case 32:
@@ -202,9 +202,10 @@ class AsaProviderImpl extends AbstractDbmsProvider implements DbmsProvider {
                 dataTypeName = "String";
                 break;
 
+            case 11:
             case 12:
-                // long Binary (mutilmedia files)
-                dataTypeName = "Object";
+                // binary and long Binary (mutilmedia files)
+                dataTypeName = "byte[]";
                 break;
 
             case 6:

@@ -268,7 +268,12 @@ public abstract class AbstractClassCreator extends AbstractOrmResource {
         boolean okToAddProperty = (!varName.equals("dateCreated") && !varName.equals("dateUpdated")
                 && !varName.equals("userId") && !varName.equals("ipCreated") && !varName.equals("ipUpdated"));
         if (okToAddProperty) {
-            this.addCoreJavaObjectMethodEntries(varName);
+            if (dataType == 11 || dataType == 12) {
+                addCoreJavaObjectMethodEntriesForBytes(varName);
+            }
+            else {
+                this.addCoreJavaObjectMethodEntries(varName);
+            }
         }
         return 1;
     }
@@ -307,6 +312,40 @@ public abstract class AbstractClassCreator extends AbstractOrmResource {
         return;
     }
     
+    private void addCoreJavaObjectMethodEntriesForBytes(String varName) {
+        // Setup entry for equals() method.
+        this.equalsMethodEntries.append(RMT2String.spaces(3));
+        this.equalsMethodEntries.append("if (EqualityAssistant.bytesNotEqual(this.");
+        this.equalsMethodEntries.append(varName);
+        this.equalsMethodEntries.append(", other.");
+        this.equalsMethodEntries.append(varName);
+        this.equalsMethodEntries.append(")) {\n");
+        this.equalsMethodEntries.append(RMT2String.spaces(6));
+        this.equalsMethodEntries.append("return false;\n");
+        this.equalsMethodEntries.append(RMT2String.spaces(3));
+        this.equalsMethodEntries.append("}\n");
+
+        // Setup entry for hashCode() method.
+        if (this.hashCodeMethodEntries.length() > 20) {
+            this.hashCodeMethodEntries.append(",\n");
+            this.hashCodeMethodEntries.append(RMT2String.spaces(15));
+        }
+        this.hashCodeMethodEntries.append("HashCodeAssistant.hashByteArray(this.");
+        this.hashCodeMethodEntries.append(varName);
+        this.hashCodeMethodEntries.append(")");
+
+        // Setup entry for toString() method
+        if (this.toStringMethodEntries.length() > 5) {
+            this.toStringMethodEntries.append(" + \n");
+            this.toStringMethodEntries.append(RMT2String.spaces(10));
+            this.toStringMethodEntries.append("\", ");
+        }
+        this.toStringMethodEntries.append(varName);
+        this.toStringMethodEntries.append("=\" + ");
+        this.toStringMethodEntries.append(varName);
+        return;
+    }
+
     private String finalizeCoreJavaObjectMethods() {
         // Build equals() method
         this.equalsMethod = new StringBuilder();
