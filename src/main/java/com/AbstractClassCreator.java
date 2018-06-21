@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Properties;
 
-import com.util.RMT2String;
+import com.api.util.RMT2String;
 
 /**
  * Proivides the necessary logic to generate an ORM java bean class file

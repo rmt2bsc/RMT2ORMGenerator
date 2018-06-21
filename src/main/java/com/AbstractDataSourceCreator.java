@@ -9,8 +9,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.api.util.RMT2File;
 import com.api.xml.RMT2XmlUtility;
-import com.util.RMT2File;
 
 /**
  * Proivides the necessary logic to generate an ORM DataSource view file as XML
