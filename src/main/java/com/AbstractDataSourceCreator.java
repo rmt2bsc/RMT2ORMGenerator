@@ -95,7 +95,7 @@ public abstract class AbstractDataSourceCreator extends AbstractOrmResource {
 
                 doc.appendChild(root);
                 // doc.setXmlVersion("1.0");
-                String fileContent = RMT2XmlUtility.printDocumentWithJdom(doc,
+                String fileContent = RMT2XmlUtility.prettyPrint(doc,
                         true, false);
                 String fileName = outputPath + formattedTableName + "View.xml";
                 RMT2File.createFile(fileContent, fileName);
