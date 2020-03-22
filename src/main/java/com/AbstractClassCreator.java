@@ -92,8 +92,8 @@ public abstract class AbstractClassCreator extends AbstractOrmResource {
                 this.header.append("package " + packageLoc + ";\n\n\n");
                 this.header.append("import java.util.Date;\n");
                 this.header.append("import java.io.*;\n");
-                this.header.append("import com.util.assistants.EqualityAssistant;\n");
-                this.header.append("import com.util.assistants.HashCodeAssistant;\n");
+                this.header.append("import com.api.util.assistants.EqualityAssistant;\n");
+                this.header.append("import com.api.util.assistants.HashCodeAssistant;\n");
                 this.header
                         .append("import com.api.persistence.db.orm.OrmBean;\n");
                 this.header.append("import com.SystemException;\n\n\n");
