@@ -185,12 +185,12 @@ class AsaProviderImpl extends AbstractDbmsProvider implements DbmsProvider {
                 break;
 
             case 7:
-            case 8:
             case 33:
             case 34:
                 dataTypeName = "char";
                 break;
 
+            case 8:
             case 9:
             case 10:
                 // case 11:
